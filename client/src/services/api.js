@@ -5,7 +5,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 10000,
+  timeout: 30000,
 });
 
 // Request interceptor to automatically attach JWT token if present in localStorage
@@ -42,8 +42,26 @@ api.interceptors.response.use(
         })
       );
     }
-    const message =
-      error.response?.data?.message || error.message || 'Something went wrong';
+
+    let message = 'Something went wrong. Please check your connection and try again.';
+    if (error.response?.data?.message) {
+      message = error.response.data.message;
+    } else if (typeof error.response?.data === 'string' && error.response.data.length < 200) {
+      message = error.response.data;
+    } else if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
+      message = 'Request timed out. Please check your connection and try again.';
+    } else if (error.response?.status === 400) {
+      message = 'Please check your submitted details and try again.';
+    } else if (error.response?.status === 401) {
+      message = 'Invalid email or password.';
+    } else if (error.response?.status === 404) {
+      message = 'Requested service not found.';
+    } else if (error.response?.status >= 500) {
+      message = 'Server is currently busy. Please try again in a few moments.';
+    } else if (error.message && !error.message.includes('status code')) {
+      message = error.message;
+    }
+
     return Promise.reject(new Error(message));
   }
 );
