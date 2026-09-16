@@ -46,6 +46,7 @@ app.get('/', (req, res) => {
 
 // API Routes
 app.use('/api', apiRoutes);
+app.use('/', apiRoutes);
 
 // Error Handling
 app.use(notFound);

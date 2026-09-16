@@ -13,5 +13,10 @@ module.exports = async (req, res) => {
       console.warn('MongoDB connection notice in serverless:', err.message);
     }
   }
-  return app(req, res);
+  return new Promise((resolve, reject) => {
+    res.on('finish', resolve);
+    res.on('close', resolve);
+    res.on('error', reject);
+    app(req, res);
+  });
 };

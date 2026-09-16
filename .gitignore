@@ -38,3 +38,5 @@ Desktop.ini
 # Binaries
 *.exe
 cloudflared.exe
+
+.vercel
