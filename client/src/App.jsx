@@ -96,7 +96,7 @@ export default function App() {
                   <span className="font-semibold text-slate-400">CampusTales</span>
                   <span>— College ends. Stories stay.</span>
                 </div>
-                <div>MERN Stack Architecture • Resume-Ready Master Project</div>
+                <div>Preserving campus memories forever • Built for college students & alumni</div>
               </div>
             </footer>
           </div>
