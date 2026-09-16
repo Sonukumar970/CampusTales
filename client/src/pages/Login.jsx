@@ -34,7 +34,10 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.email || !formData.password) {
+    const cleanEmail = formData.email.trim().toLowerCase();
+    const cleanPassword = formData.password.trim();
+
+    if (!cleanEmail || !cleanPassword) {
       setError('Please fill in all fields.');
       return;
     }
@@ -42,7 +45,7 @@ export default function Login() {
     setIsSubmitting(true);
     setError('');
 
-    const res = await login(formData.email, formData.password);
+    const res = await login(cleanEmail, cleanPassword);
     setIsSubmitting(false);
 
     if (res.success) {
@@ -53,10 +56,10 @@ export default function Login() {
   };
 
   // Quick fill helper for testing
-  const handleQuickFill = () => {
+  const handleQuickFill = (email = 'sonu@campus.edu', password = 'password123') => {
     setFormData({
-      email: 'sonu@campus.edu',
-      password: 'password123',
+      email,
+      password,
     });
     setError('');
   };
@@ -159,15 +162,34 @@ export default function Login() {
           </form>
 
           {/* Quick Demo Helper */}
-          <div className="mt-5 pt-5 border-t border-slate-800/80 text-center">
-            <button
-              type="button"
-              onClick={handleQuickFill}
-              className="text-xs text-indigo-400 hover:text-indigo-300 font-medium inline-flex items-center gap-1.5 transition"
-            >
-              <Sparkles className="h-3.5 w-3.5" />
-              <span>Fill Demo Credentials (sonu@campus.edu)</span>
-            </button>
+          <div className="mt-5 pt-5 border-t border-slate-800/80 text-center space-y-2">
+            <div className="text-[11px] text-slate-400 font-medium flex items-center justify-center gap-1.5">
+              <Sparkles className="h-3.5 w-3.5 text-indigo-400" />
+              <span>Quick Demo Logins (Click to autofill):</span>
+            </div>
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              <button
+                type="button"
+                onClick={() => handleQuickFill('sonu@campus.edu', 'password123')}
+                className="px-2.5 py-1 rounded-lg glass-pill text-[11px] font-semibold text-indigo-300 hover:text-white hover:bg-slate-800 transition border border-indigo-500/20"
+              >
+                Sonu (NIT Patna)
+              </button>
+              <button
+                type="button"
+                onClick={() => handleQuickFill('riya@campus.edu', 'password123')}
+                className="px-2.5 py-1 rounded-lg glass-pill text-[11px] font-semibold text-rose-300 hover:text-white hover:bg-slate-800 transition border border-rose-500/20"
+              >
+                Riya (Delhi Univ)
+              </button>
+              <button
+                type="button"
+                onClick={() => handleQuickFill('arjun@campus.edu', 'password123')}
+                className="px-2.5 py-1 rounded-lg glass-pill text-[11px] font-semibold text-emerald-300 hover:text-white hover:bg-slate-800 transition border border-emerald-500/20"
+              >
+                Arjun (IIT Delhi)
+              </button>
+            </div>
           </div>
         </div>
 

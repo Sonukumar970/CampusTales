@@ -44,18 +44,23 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const cleanName = formData.name.trim();
+    const cleanEmail = formData.email.trim().toLowerCase();
+    const cleanCollege = formData.college.trim();
+    const cleanPassword = formData.password;
+
     // Validations
-    if (!formData.name || !formData.email || !formData.college || !formData.password) {
-      setError('Please fill in all required fields.');
+    if (!cleanName || !cleanEmail || !cleanCollege || !cleanPassword) {
+      setError('Please fill in all required fields (Name, Email, College, and Password).');
       return;
     }
 
-    if (formData.password.length < 6) {
+    if (cleanPassword.length < 6) {
       setError('Password must be at least 6 characters long.');
       return;
     }
 
-    if (formData.password !== formData.confirmPassword) {
+    if (cleanPassword !== formData.confirmPassword) {
       setError('Passwords do not match. Please verify.');
       return;
     }
@@ -64,13 +69,13 @@ export default function Register() {
     setError('');
 
     const res = await register({
-      name: formData.name,
-      email: formData.email,
-      college: formData.college,
-      course: formData.course,
-      batch: Number(formData.batch),
-      password: formData.password,
-      bio: formData.bio || 'College life taught me that every moment counts...',
+      name: cleanName,
+      email: cleanEmail,
+      college: cleanCollege,
+      course: formData.course ? formData.course.trim() : 'General',
+      batch: Number(formData.batch) || new Date().getFullYear(),
+      password: cleanPassword,
+      bio: formData.bio ? formData.bio.trim() : 'College life taught me that every moment counts...',
     });
 
     setIsSubmitting(false);
@@ -78,7 +83,7 @@ export default function Register() {
     if (res.success) {
       navigate('/profile');
     } else {
-      setError(res.error || 'Registration failed.');
+      setError(res.error || 'Registration failed. Please check your details.');
     }
   };
 
