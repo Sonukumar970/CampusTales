@@ -11,15 +11,13 @@ import {
   Frown,
   Sprout,
   BookOpen,
-  Activity,
-  CheckCircle2,
-  Database,
-  Server,
   ArrowRight,
   RefreshCw,
   Compass,
   PenTool,
   Loader2,
+  Shield,
+  Award,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../services/api';
@@ -52,40 +50,6 @@ export default function Home() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
-
-  // Health status
-  const [healthData, setHealthData] = useState(null);
-  const [loadingHealth, setLoadingHealth] = useState(false);
-  const [lastChecked, setLastChecked] = useState(null);
-
-  const fetchHealthStatus = async (showToast = false) => {
-    setLoadingHealth(true);
-    try {
-      const response = await api.get('/health');
-      setHealthData(response.data);
-      setLastChecked(new Date().toLocaleTimeString());
-      if (showToast) {
-        toast.success('🎉 Express API & Server are running perfectly!', {
-          id: 'health-toast',
-        });
-      }
-    } catch (err) {
-      console.error('API health check error:', err);
-      setHealthData({
-        success: false,
-        message: 'Could not connect to Express backend.',
-      });
-      if (showToast) {
-        toast.error('❌ Server unreachable on port 5000', { id: 'health-toast' });
-      }
-    } finally {
-      setLoadingHealth(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchHealthStatus();
-  }, []);
 
   // Fetch stories with debounced search and filters
   useEffect(() => {
@@ -193,81 +157,46 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── LIVE ARCHITECTURE STATUS CARD ── */}
-      <section className="glass-card rounded-2xl p-6 border border-slate-800 relative overflow-hidden">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6 border-b border-slate-800">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
-              <Activity className="h-5 w-5" />
-            </div>
-            <div>
-              <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                <span>MERN Architecture & Live Status</span>
-                <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">
-                  Verified
-                </span>
-              </h2>
-              <p className="text-xs text-slate-400">
-                End-to-end communication between React client, Express API, and Mongoose stories collection.
-              </p>
-            </div>
+      {/* ── PLATFORM HIGHLIGHTS STRIP ── */}
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="glass-card rounded-2xl p-5 border border-slate-800/80 hover:border-slate-700 transition space-y-2">
+          <div className="h-10 w-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center text-xl">
+            🎭
           </div>
-
-          <div className="flex items-center gap-3 text-xs text-slate-400">
-            <span>Last Ping: <strong className="text-slate-200 font-mono">{lastChecked || 'Checking...'}</strong></span>
-            <button
-              onClick={() => fetchHealthStatus(true)}
-              disabled={loadingHealth}
-              className="p-1.5 rounded-lg glass-pill hover:bg-slate-800 text-slate-300 transition"
-              title="Ping Backend"
-            >
-              <RefreshCw className={`h-3.5 w-3.5 ${loadingHealth ? 'animate-spin text-indigo-400' : ''}`} />
-            </button>
-          </div>
+          <h3 className="text-sm font-bold text-white">Anonymous Freedom</h3>
+          <p className="text-xs text-slate-400 leading-relaxed">
+            Share sensitive confessions, crush stories, or exam chaos with total identity protection.
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6">
-          {/* Step 1: React Vite */}
-          <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800/80 space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Frontend Client</span>
-              <span className="h-2 w-2 rounded-full bg-emerald-400" />
-            </div>
-            <div className="text-lg font-bold text-white">React 19 + Vite</div>
-            <p className="text-xs text-slate-400">Story Cards, FeedFilters, Category Explorer, and Real-Time Search.</p>
+        <div className="glass-card rounded-2xl p-5 border border-slate-800/80 hover:border-slate-700 transition space-y-2">
+          <div className="h-10 w-10 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center text-xl">
+            🏢
           </div>
+          <h3 className="text-sm font-bold text-white">Campus Circles</h3>
+          <p className="text-xs text-slate-400 leading-relaxed">
+            Join micro-communities for your hostel block, coding club, literary society, or canteen gang.
+          </p>
+        </div>
 
-          {/* Step 2: Express Server */}
-          <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800/80 space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Backend API</span>
-              <span className={`h-2 w-2 rounded-full ${healthData?.success ? 'bg-emerald-400' : 'bg-rose-400'}`} />
-            </div>
-            <div className="text-lg font-bold text-white flex items-center gap-2">
-              <Server className="h-4 w-4 text-indigo-400" />
-              <span>Express + Story CRUD</span>
-            </div>
-            <p className="text-xs text-slate-400">
-              {healthData?.success ? `Port 5000: Stories API with search & sorting` : 'Starting on port 5000'}
-            </p>
+        <div className="glass-card rounded-2xl p-5 border border-slate-800/80 hover:border-slate-700 transition space-y-2">
+          <div className="h-10 w-10 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center text-xl">
+            🎓
           </div>
+          <h3 className="text-sm font-bold text-white">4-Year Journey</h3>
+          <p className="text-xs text-slate-400 leading-relaxed">
+            Preserve your college roadmap from Sem 1 orientation to Sem 8 convocation chronologically.
+          </p>
+        </div>
 
-          {/* Step 3: MongoDB */}
-          <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800/80 space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Database Layer</span>
-              <span className={`h-2 w-2 rounded-full ${healthData?.database?.connected ? 'bg-emerald-400' : 'bg-amber-400'}`} />
-            </div>
-            <div className="text-lg font-bold text-white flex items-center gap-2">
-              <Database className="h-4 w-4 text-amber-400" />
-              <span>MongoDB Active</span>
-            </div>
-            <p className="text-xs text-slate-400">
-              {healthData?.database?.connected
-                ? `Status: Connected (${totalCount} stories indexed)`
-                : 'Connecting to MongoDB'}
-            </p>
+        <div className="glass-card rounded-2xl p-5 border border-slate-800/80 hover:border-slate-700 transition space-y-2">
+          <div className="h-10 w-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl">
+            🏆
           </div>
+          <h3 className="text-sm font-bold text-white">Storyteller Badges</h3>
+          <p className="text-xs text-slate-400 leading-relaxed">
+            Earn achievements like Campus Legend, Hostel Chronicler, and Milestone Pioneer as you write.
+          </p>
         </div>
       </section>
 
@@ -307,7 +236,7 @@ export default function Home() {
         {isLoadingStories ? (
           <div className="py-20 text-center space-y-3">
             <Loader2 className="h-8 w-8 text-indigo-500 animate-spin mx-auto" />
-            <p className="text-xs text-slate-400">Loading stories from MongoDB...</p>
+            <p className="text-xs text-slate-400">Loading stories from campus...</p>
           </div>
         ) : stories.length > 0 ? (
           <div className="space-y-8">
@@ -399,48 +328,49 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── DEVELOPMENT ROADMAP ── */}
-      <section className="glass-card rounded-2xl p-6 border border-slate-800">
-        <h2 className="text-lg font-bold text-white mb-1">CampusTales Development Roadmap</h2>
-        <p className="text-xs text-slate-400 mb-6">Following the PRD step-by-step development strategy.</p>
+      {/* ── CALL TO ACTION SECTION ── */}
+      <section className="glass-card rounded-3xl p-8 sm:p-12 border border-slate-800 text-center space-y-6 relative overflow-hidden">
+        {/* Glow ambient background */}
+        <div className="absolute top-0 right-0 w-80 h-48 bg-indigo-600/10 blur-3xl pointer-events-none -z-10" />
+        <div className="absolute bottom-0 left-0 w-80 h-48 bg-purple-600/10 blur-3xl pointer-events-none -z-10" />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 text-xs">
-          <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 space-y-1">
-            <div className="font-bold flex items-center gap-1">
-              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
-              <span>Phase 1: Foundation</span>
-            </div>
-            <div className="text-[11px] text-emerald-400/80">Features 1–6 (Done)</div>
+        <div className="max-w-2xl mx-auto space-y-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold">
+            <GraduationCap className="h-4 w-4" />
+            <span>Preserve Your College Journey</span>
           </div>
 
-          <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 space-y-1">
-            <div className="font-bold flex items-center gap-1">
-              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
-              <span>Phase 2: Auth</span>
-            </div>
-            <div className="text-[11px] text-emerald-400/80">Features 7–14 (Done)</div>
-          </div>
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+            Every college story deserves to stay alive.
+          </h2>
 
-          <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 space-y-1">
-            <div className="font-bold flex items-center gap-1">
-              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
-              <span>Phase 3: Stories</span>
-            </div>
-            <div className="text-[11px] text-emerald-400/80">Features 15–22 (Done)</div>
-          </div>
+          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            Four years fly by in the blink of an eye. The laughter in hostel corridors, the 3 AM Maggi noodles, the proxy roll calls, and the convocation hugs—don't let them fade away.
+          </p>
+        </div>
 
-          <div className="p-3 rounded-lg bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 space-y-1">
-            <div className="font-bold flex items-center gap-1">
-              <span className="h-2 w-2 rounded-full bg-indigo-400 animate-ping" />
-              <span>Phase 4: Feed & Explore</span>
-            </div>
-            <div className="text-[11px] text-indigo-400/80">Features 23–29 (Active)</div>
-          </div>
+        <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+          <button
+            onClick={() => {
+              if (isAuthenticated) {
+                navigate('/create-story');
+              } else {
+                navigate('/register');
+              }
+            }}
+            className="px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold text-xs sm:text-sm shadow-lg shadow-indigo-600/30 flex items-center gap-2 transition active:scale-95"
+          >
+            <PenTool className="h-4 w-4" />
+            <span>Start Writing Today</span>
+          </button>
 
-          <div className="p-3 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 space-y-1">
-            <div className="font-bold">Phases 5–10: Social & Admin</div>
-            <div className="text-[11px] text-slate-500">Features 30–65</div>
-          </div>
+          <Link
+            to="/circles"
+            className="px-6 py-3 rounded-xl glass-pill hover:bg-slate-800 text-slate-200 font-semibold text-xs sm:text-sm flex items-center gap-2 transition"
+          >
+            <Users className="h-4 w-4 text-purple-400" />
+            <span>Explore Campus Circles</span>
+          </Link>
         </div>
       </section>
     </main>
