@@ -196,12 +196,25 @@ export default function StoryDetails() {
         {/* ── METADATA HEADER ── */}
         <div className="space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <span
-              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${catStyle.color}`}
-            >
-              <span>{catStyle.emoji}</span>
-              <span className="uppercase tracking-wider">{story.category}</span>
-            </span>
+            <div className="flex flex-wrap items-center gap-2">
+              <span
+                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${catStyle.color}`}
+              >
+                <span>{catStyle.emoji}</span>
+                <span className="uppercase tracking-wider">{story.category}</span>
+              </span>
+
+              {story.circle && (
+                <Link
+                  to={`/circles/${story.circle.slug || story.circle}`}
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-300 border border-indigo-500/30 hover:bg-indigo-500/20 hover:border-indigo-500/50 transition"
+                  title={`Belongs to ${story.circle.name || 'Campus Circle'}`}
+                >
+                  <span>{story.circle.icon || '🌟'}</span>
+                  <span>{story.circle.name || 'Circle'}</span>
+                </Link>
+              )}
+            </div>
 
             {/* Owner Actions */}
             {story.isOwner && (

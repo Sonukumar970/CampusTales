@@ -10,7 +10,7 @@ const {
 const { protect, optionalAuth } = require('../middleware/authMiddleware');
 
 // Timeline endpoints
-router.route('/').post(protect, createMemory);
+router.route('/').get(protect, getMyTimeline).post(protect, createMemory);
 router.route('/timeline').get(protect, getMyTimeline);
 router.route('/user/:userId').get(optionalAuth, getUserTimeline);
 

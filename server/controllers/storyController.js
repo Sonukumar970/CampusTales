@@ -335,6 +335,7 @@ const updateStory = async (req, res, next) => {
       images,
       isAnonymous,
       status,
+      circle,
     } = req.body;
 
     if (title) story.title = title.trim();
@@ -350,8 +351,24 @@ const updateStory = async (req, res, next) => {
     if (isAnonymous !== undefined) story.isAnonymous = Boolean(isAnonymous);
     if (status) story.status = status;
 
+    if (circle !== undefined) {
+      const oldCircleId = story.circle ? story.circle.toString() : null;
+      const newCircleId = circle && circle !== '' ? circle.toString() : null;
+
+      if (oldCircleId !== newCircleId) {
+        if (oldCircleId && story.status === 'published') {
+          await Circle.findByIdAndUpdate(oldCircleId, { $inc: { storyCount: -1 } });
+        }
+        if (newCircleId && (status || story.status) === 'published') {
+          await Circle.findByIdAndUpdate(newCircleId, { $inc: { storyCount: 1 } });
+        }
+        story.circle = newCircleId || null;
+      }
+    }
+
     await story.save();
     await story.populate('author', 'name college course batch profileImage');
+    await story.populate('circle', 'name slug icon category');
 
     res.status(200).json({
       success: true,

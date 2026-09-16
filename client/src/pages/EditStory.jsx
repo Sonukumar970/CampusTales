@@ -9,6 +9,7 @@ import {
   Sparkles,
   Loader2,
   AlertTriangle,
+  Users,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../services/api';
@@ -44,6 +45,7 @@ export default function EditStory() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [availableCircles, setAvailableCircles] = useState([]);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -55,14 +57,23 @@ export default function EditStory() {
     eventDate: '',
     isAnonymous: false,
     status: 'published',
+    circle: '',
   });
 
   useEffect(() => {
-    const fetchStory = async () => {
+    const fetchStoryAndCircles = async () => {
       try {
-        const res = await api.get(`/stories/${id}`);
-        if (res.data.success) {
-          const s = res.data.story;
+        const [storyRes, circlesRes] = await Promise.allSettled([
+          api.get(`/stories/${id}`),
+          api.get('/circles'),
+        ]);
+
+        if (circlesRes.status === 'fulfilled' && circlesRes.value.data.success) {
+          setAvailableCircles(circlesRes.value.data.circles || []);
+        }
+
+        if (storyRes.status === 'fulfilled' && storyRes.value.data.success) {
+          const s = storyRes.value.data.story;
 
           if (!s.isOwner) {
             toast.error('You do not have permission to edit this story.');
@@ -80,7 +91,11 @@ export default function EditStory() {
             eventDate: s.eventDate ? s.eventDate.split('T')[0] : '',
             isAnonymous: Boolean(s.isAnonymous),
             status: s.status || 'published',
+            circle: s.circle?._id || s.circle || '',
           });
+        } else {
+          toast.error('Could not load story for editing.');
+          navigate('/profile');
         }
       } catch (err) {
         toast.error('Could not load story for editing.');
@@ -90,7 +105,7 @@ export default function EditStory() {
       }
     };
 
-    fetchStory();
+    fetchStoryAndCircles();
   }, [id, navigate]);
 
   const handleChange = (field, value) => {
@@ -106,7 +121,11 @@ export default function EditStory() {
 
     setIsSaving(true);
     try {
-      const res = await api.put(`/stories/${id}`, formData);
+      const payload = {
+        ...formData,
+        circle: formData.circle || null,
+      };
+      const res = await api.put(`/stories/${id}`, payload);
       if (res.data.success) {
         toast.success('Story updated successfully! ✨');
         navigate(`/stories/${id}`);
@@ -283,6 +302,31 @@ export default function EditStory() {
                 className="w-full px-3 py-2.5 rounded-xl bg-slate-900/80 border border-slate-800 text-slate-200 text-xs outline-none focus:border-indigo-500"
               />
             </div>
+          </div>
+
+          {/* Optional Campus Circle Attachment */}
+          <div className="pt-3 border-t border-slate-800">
+            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+              Campus Circle (Optional)
+            </label>
+            <div className="relative">
+              <Users className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-indigo-400 pointer-events-none" />
+              <select
+                value={formData.circle}
+                onChange={(e) => handleChange('circle', e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900/80 border border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-slate-100 text-xs transition outline-none cursor-pointer"
+              >
+                <option value="">🌐 None (Global Feed Only)</option>
+                {availableCircles.map((c) => (
+                  <option key={c._id} value={c._id}>
+                    {c.icon} {c.name} ({c.college})
+                  </option>
+                ))}
+              </select>
+            </div>
+            <p className="text-[11px] text-slate-500 mt-1">
+              Select a micro-community circle to share or categorize this story with your campus circle.
+            </p>
           </div>
 
           {/* Privacy Toggle */}

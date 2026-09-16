@@ -187,7 +187,18 @@ const getUserLikedStories = async (req, res, next) => {
  */
 const getUserBadges = async (req, res, next) => {
   try {
-    const targetUserId = req.params.id;
+    let targetUserId = req.params.id;
+    if ((targetUserId === 'me' || !targetUserId) && req.user) {
+      targetUserId = req.user._id;
+    }
+
+    if (!targetUserId || targetUserId === 'undefined') {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid user ID specified for badges.',
+      });
+    }
+
     const badgeData = await calculateUserBadges(targetUserId);
     res.status(200).json({
       success: true,
