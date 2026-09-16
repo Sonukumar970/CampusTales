@@ -42,7 +42,6 @@ const connectDB = async () => {
     } else {
       console.error(`❌ Database connection failed in production: ${primaryErr.message}`);
       isConnected = false;
-      process.exit(1);
     }
   }
 };
