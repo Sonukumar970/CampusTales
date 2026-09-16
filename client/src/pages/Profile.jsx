@@ -52,7 +52,7 @@ export default function Profile() {
     const fetchAllData = async () => {
       try {
         const [storiesRes, savedRes, likedRes, memoriesRes, circlesRes, badgesRes] = await Promise.all([
-          api.get(`/stories?author=${user._id}`),
+          api.get(`/stories?author=${user._id}`).catch(() => ({ data: { stories: [] } })),
           api.get('/users/saved-stories').catch(() => ({ data: { stories: [] } })),
           api.get('/users/liked-stories').catch(() => ({ data: { stories: [] } })),
           api.get('/memories/timeline').catch(() => ({ data: { memories: [] } })),
