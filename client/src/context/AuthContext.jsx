@@ -57,11 +57,8 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await api.post('/auth/register', formData);
       if (response.data.success) {
-        const { token: newToken, user: newUser } = response.data;
-        localStorage.setItem('campustales_token', newToken);
-        setToken(newToken);
-        setUser(newUser);
-        toast.success(`Welcome to CampusTales, ${newUser.name}! 🎉`, {
+        const { user: newUser } = response.data;
+        toast.success(`Registration successful, ${newUser.name}! Please log in.`, {
           id: 'auth-toast',
         });
         return { success: true, user: newUser };

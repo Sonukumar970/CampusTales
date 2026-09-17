@@ -13,7 +13,6 @@ import {
   Sparkles,
   ArrowRight,
   Loader2,
-  CheckCircle2,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -81,7 +80,12 @@ export default function Register() {
     setIsSubmitting(false);
 
     if (res.success) {
-      navigate('/profile');
+      navigate('/login', {
+        replace: true,
+        state: {
+          registrationSuccess: 'Registration successful. Please log in with your email and password.',
+        },
+      });
     } else {
       setError(res.error || 'Registration failed. Please check your details.');
     }
