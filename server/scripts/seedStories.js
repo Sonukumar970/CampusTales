@@ -14,6 +14,26 @@ const seedStoriesData = async () => {
     }
 
     // 1. Ensure seed users exist with deterministic IDs
+    let adminUser = await User.findOne({ email: 'admin@campustales.edu' });
+    if (!adminUser) {
+      adminUser = await User.create({
+        _id: new mongoose.Types.ObjectId('650000000000000000000000'),
+        name: 'Campus Admin',
+        email: 'admin@campustales.edu',
+        password: 'password123',
+        college: 'CampusTales HQ',
+        course: 'Platform Administration',
+        batch: new Date().getFullYear(),
+        bio: 'Preserving and moderating college memories across all campus communities.',
+        profileImage:
+          'https://api.dicebear.com/7.x/bottts/svg?seed=CampusAdmin&backgroundColor=6366f1',
+        role: 'admin',
+      });
+    } else if (adminUser.role !== 'admin') {
+      adminUser.role = 'admin';
+      await adminUser.save();
+    }
+
     let sonu = await User.findOne({ email: 'sonu@campus.edu' });
     if (!sonu) {
       sonu = await User.create({
@@ -27,7 +47,11 @@ const seedStoriesData = async () => {
         bio: 'College taught me that late nights make the longest memories.',
         profileImage:
           'https://api.dicebear.com/7.x/initials/svg?seed=Sonu%20Kumar&backgroundColor=6366f1',
+        role: 'admin',
       });
+    } else if (sonu.role !== 'admin') {
+      sonu.role = 'admin';
+      await sonu.save();
     }
 
     let riya = await User.findOne({ email: 'riya@campus.edu' });
