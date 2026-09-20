@@ -12,11 +12,13 @@ const connectDB = async () => {
     return mongoose.connection;
   }
 
-  const primaryUri = process.env.MONGO_URI || 'mongodb://localhost:27017/campustales';
+  const primaryUri =
+    process.env.MONGO_URI ||
+    'mongodb+srv://kumarsonualways4u_db_user:sonu12345@cluster0.dvcy1sl.mongodb.net/campustales?retryWrites=true&w=majority';
 
   try {
     const conn = await mongoose.connect(primaryUri, {
-      serverSelectionTimeoutMS: 3000,
+      serverSelectionTimeoutMS: 5000,
     });
     isConnected = true;
     console.log(`✅ MongoDB Connected: ${conn.connection.host} (${conn.connection.name})`);
