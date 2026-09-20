@@ -1,5 +1,8 @@
 const mongoose = require('mongoose');
 
+// Disable query buffering so disconnected queries fail fast instead of hanging 10s
+mongoose.set('bufferCommands', false);
+
 let isConnected = false;
 let memoryServer = null;
 

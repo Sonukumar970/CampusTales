@@ -56,6 +56,10 @@ api.interceptors.response.use(
       message = 'Invalid email or password.';
     } else if (error.response?.status === 404) {
       message = 'Requested service not found.';
+    } else if (error.response?.status === 503) {
+      message =
+        error.response?.data?.message ||
+        'Database connection unavailable on Vercel. Please check MONGO_URI.';
     } else if (error.response?.status >= 500) {
       message = 'Server is currently busy. Please try again in a few moments.';
     } else if (error.message === 'Network Error' || !error.response) {
