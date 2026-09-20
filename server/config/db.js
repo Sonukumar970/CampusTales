@@ -4,6 +4,11 @@ let isConnected = false;
 let memoryServer = null;
 
 const connectDB = async () => {
+  if (mongoose.connection.readyState === 1) {
+    isConnected = true;
+    return mongoose.connection;
+  }
+
   const primaryUri = process.env.MONGO_URI || 'mongodb://localhost:27017/campustales';
 
   try {
@@ -24,11 +29,16 @@ const connectDB = async () => {
         const os = require('os');
         const cacheDir = path.join(os.homedir(), '.cache', 'mongodb-binaries');
         const { MongoMemoryServer } = require('mongodb-memory-server');
-        memoryServer = await MongoMemoryServer.create({
-          binary: {
-            downloadDir: cacheDir,
-          },
-        });
+        if (!memoryServer) {
+          memoryServer = await MongoMemoryServer.create({
+            binary: {
+              downloadDir: cacheDir,
+            },
+            instance: {
+              launchTimeout: 60000,
+            },
+          });
+        }
         const memUri = memoryServer.getUri();
 
         const memConn = await mongoose.connect(memUri);
@@ -38,10 +48,12 @@ const connectDB = async () => {
       } catch (memErr) {
         console.error(`❌ In-memory MongoDB failed to start: ${memErr.message}`);
         isConnected = false;
+        throw memErr;
       }
     } else {
       console.error(`❌ Database connection failed in production: ${primaryErr.message}`);
       isConnected = false;
+      throw primaryErr;
     }
   }
 };
@@ -58,7 +70,19 @@ const getConnectionStatus = () => {
   };
 };
 
+const closeDB = async () => {
+  if (mongoose.connection.readyState !== 0) {
+    await mongoose.disconnect();
+  }
+  if (memoryServer) {
+    await memoryServer.stop();
+    memoryServer = null;
+  }
+  isConnected = false;
+};
+
 module.exports = {
   connectDB,
   getConnectionStatus,
+  closeDB,
 };

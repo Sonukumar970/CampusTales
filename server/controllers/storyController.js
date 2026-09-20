@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Story = require('../models/Story');
 const Like = require('../models/Like');
 const Save = require('../models/Save');
@@ -62,7 +63,7 @@ const createStory = async (req, res, next) => {
       category.charAt(0).toUpperCase() + category.slice(1);
 
     let circleId = null;
-    if (circle) {
+    if (circle && mongoose.Types.ObjectId.isValid(circle)) {
       const circleDoc = await Circle.findById(circle);
       if (circleDoc) {
         circleId = circleDoc._id;
@@ -353,7 +354,8 @@ const updateStory = async (req, res, next) => {
 
     if (circle !== undefined) {
       const oldCircleId = story.circle ? story.circle.toString() : null;
-      const newCircleId = circle && circle !== '' ? circle.toString() : null;
+      const isValidCircle = circle && circle !== '' && mongoose.Types.ObjectId.isValid(circle);
+      const newCircleId = isValidCircle ? circle.toString() : null;
 
       if (oldCircleId !== newCircleId) {
         if (oldCircleId && story.status === 'published') {

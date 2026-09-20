@@ -43,7 +43,7 @@ api.interceptors.response.use(
       );
     }
 
-    let message = 'Something went wrong. Please check your connection and try again.';
+    let message = 'Unable to connect to server. Please check your connection and try again.';
     if (error.response?.data?.message) {
       message = error.response.data.message;
     } else if (typeof error.response?.data === 'string' && error.response.data.length < 200) {
@@ -58,6 +58,8 @@ api.interceptors.response.use(
       message = 'Requested service not found.';
     } else if (error.response?.status >= 500) {
       message = 'Server is currently busy. Please try again in a few moments.';
+    } else if (error.message === 'Network Error' || !error.response) {
+      message = 'Unable to connect to CampusTales server. Please check your connection.';
     } else if (error.message && !error.message.includes('status code')) {
       message = error.message;
     }

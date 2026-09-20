@@ -8,6 +8,10 @@ const seedStoriesData = async () => {
     console.log('--- SEEDING DATABASE WITH AUTHENTIC STORIES ---');
 
     const mongoose = require('mongoose');
+    if (mongoose.connection.readyState !== 1) {
+      console.warn('⚠️ Database not ready. Skipping seed.');
+      return;
+    }
 
     // 1. Ensure seed users exist with deterministic IDs
     let sonu = await User.findOne({ email: 'sonu@campus.edu' });

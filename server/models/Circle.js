@@ -77,7 +77,6 @@ const circleSchema = new mongoose.Schema(
   }
 );
 
-circleSchema.index({ slug: 1 });
 circleSchema.index({ category: 1 });
 circleSchema.index({ college: 1 });
 circleSchema.index({ name: 'text', description: 'text' });
